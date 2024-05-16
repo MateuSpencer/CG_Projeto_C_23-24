@@ -4,11 +4,16 @@ import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitCo
 'use strict';
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-const cameras = [];
 const identityVector = [1, 1, 1], zeroVector = [0, 0, 0];
 
+let cylinder, ring1, ring2, ring3;
+let ringThickness = 2;
+let speed = 0.1; 
+
+const cameras = [];
 let activeCamera, controls;
 let directionalLight; 
+
 let keys = {};
 
 function createObject(parent, geometry, material, position, scale, rotation) {
@@ -63,19 +68,19 @@ function createCarrossel(x, z) {
     const sceneReferencial = createReferencial(scene, [x, 0, z], identityVector, zeroVector);
 
     // cylinder
-    createObject(sceneReferencial, cylinderGeometry, material, [0, 5, 0], [1, 1, 1], zeroVector);
+    cylinder = createObject(sceneReferencial, cylinderGeometry, material, [0, 4, 0], [1, 0.8, 1], zeroVector);
 
     // ring 1
-    const ringGeometry1 = createRingWithThickness(3.5, 4, 0.5, 32);
-    createObject(sceneReferencial, ringGeometry1, material, [0, 2, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
+    const ringGeometry1 = createRingWithThickness(5, 7, ringThickness, 32);
+    ring1 = createObject(sceneReferencial, ringGeometry1, material, [0, 2, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
 
     // ring 2
-    const ringGeometry2 = createRingWithThickness(2.5, 3, 0.5, 32);
-    createObject(sceneReferencial, ringGeometry2, material, [0, 4, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
+    const ringGeometry2 = createRingWithThickness(3, 5, ringThickness, 32);
+    ring2 = createObject(sceneReferencial, ringGeometry2, material, [0, 4, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
 
     // ring 3
-    const ringGeometry3 = createRingWithThickness(1.5, 2, 0.5, 32);
-    createObject(sceneReferencial, ringGeometry3, material, [0, 6, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
+    const ringGeometry3 = createRingWithThickness(1, 3, ringThickness, 32);
+    ring3 = createObject(sceneReferencial, ringGeometry3, material, [0, 6, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
 
     return sceneReferencial;
 }
@@ -215,14 +220,18 @@ function init() {
 }
 
 
-function moveRingUp() {
-
+function moveRingUp(ring, speed) {
+    let cylinderHeight = cylinder.geometry.parameters.height;
+    if (ring.position.y + speed <= cylinderHeight) {
+        ring.position.y += speed;
+    }
 }
 
-function moveRingDown() {
-
+function moveRingDown(ring, speed) {
+    if (ring.position.y - speed >= 0 + ringThickness) {
+        ring.position.y -= speed;
+    }
 }
-
 
 function onKeyDown(e) {
     'use strict';
@@ -246,13 +255,13 @@ function animate() {
     'use strict';
 
     if (keys['1']) {
-        moveRingUp();
+        moveRingUp(ring1, speed);
     }
     if (keys['2']) {
-        moveRingUp();
+        moveRingUp(ring2, speed);
     }
     if (keys['3']) {
-        moveRingUp();
+        moveRingUp(ring3, speed);
     }
 
     render();
