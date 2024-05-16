@@ -8,6 +8,7 @@ const cameras = [];
 const identityVector = [1, 1, 1], zeroVector = [0, 0, 0];
 
 let activeCamera, controls;
+let directionalLight; 
 let keys = {};
 
 function createObject(parent, geometry, material, position, scale, rotation) {
@@ -152,11 +153,14 @@ function createTorusKnot(x, z) {
 
 function createScene() {
     'use strict';
-    scene.background = new THREE.Color(0xadd8e6);
     scene.add(new THREE.AxesHelper(20));
 
-    let light = new THREE.AmbientLight(0xffffff, 1);
+    let light = new THREE.AmbientLight(0xffffff, 0.1);
     scene.add(light);
+
+    directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(0, Math.tan(Math.PI / 4), 1);
+    scene.add(directionalLight);
 
     createCarrossel(0, 0).name = "Carrossel";
 }
@@ -215,7 +219,7 @@ function moveRingUp() {
 
 }
 
-function moveClawBaseDown() {
+function moveRingDown() {
 
 }
 
@@ -223,6 +227,14 @@ function moveClawBaseDown() {
 function onKeyDown(e) {
     'use strict';
     keys[e.key.toLowerCase()] = true;
+
+    if (e.key.toLowerCase() === 'q') {
+        if (directionalLight.intensity === 0) {
+            directionalLight.intensity = 0.8;
+        } else {
+            directionalLight.intensity = 0;
+        }
+    }
 }
 
 function onKeyUp(e) {
@@ -234,13 +246,13 @@ function animate() {
     'use strict';
 
     if (keys['1']) {
-        rotateBoomGroup(speed);
+        moveRingUp();
     }
     if (keys['2']) {
-        rotateBoomGroup(speed);
+        moveRingUp();
     }
     if (keys['3']) {
-        rotateBoomGroup(speed);
+        moveRingUp();
     }
 
     render();
