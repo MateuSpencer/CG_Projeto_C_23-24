@@ -73,14 +73,17 @@ function createCarrossel(x, z) {
     // ring 1
     const ringGeometry1 = createRingWithThickness(5, 7, ringThickness, 32);
     ring1 = createObject(sceneReferencial, ringGeometry1, material, [0, 2, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
+    ring1.direction = 'up';
 
     // ring 2
     const ringGeometry2 = createRingWithThickness(3, 5, ringThickness, 32);
     ring2 = createObject(sceneReferencial, ringGeometry2, material, [0, 4, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
+    ring2.direction = 'up';
 
     // ring 3
     const ringGeometry3 = createRingWithThickness(1, 3, ringThickness, 32);
     ring3 = createObject(sceneReferencial, ringGeometry3, material, [0, 6, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
+    ring3.direction = 'up';
 
     return sceneReferencial;
 }
@@ -220,16 +223,22 @@ function init() {
 }
 
 
-function moveRingUp(ring, speed) {
+function moveRing(ring, speed) {
     let cylinderHeight = cylinder.geometry.parameters.height;
-    if (ring.position.y + speed <= cylinderHeight) {
-        ring.position.y += speed;
-    }
-}
-
-function moveRingDown(ring, speed) {
-    if (ring.position.y - speed >= 0 + ringThickness) {
-        ring.position.y -= speed;
+    if (ring.direction === 'up') {
+        if (ring.position.y + speed <= cylinderHeight - ringThickness) {
+            ring.position.y += speed;
+        } else {
+            // Change direction if the ring is at the top
+            ring.direction = 'down';
+        }
+    } else { // ring.direction === 'down'
+        if (ring.position.y - speed >= ringThickness) {
+            ring.position.y -= speed;
+        } else {
+            // Change direction if the ring is at the bottom
+            ring.direction = 'up';
+        }
     }
 }
 
@@ -251,19 +260,22 @@ function onKeyUp(e) {
     keys[e.key.toLowerCase()] = false;
 }
 
+function update() {
+    if (keys['1']) {
+        moveRing(ring1, speed);
+    }
+    if (keys['2']) {
+        moveRing(ring2, speed);
+    }
+    if (keys['3']) {
+        moveRing(ring3, speed);
+    }
+}
+
 function animate() {
     'use strict';
 
-    if (keys['1']) {
-        moveRingUp(ring1, speed);
-    }
-    if (keys['2']) {
-        moveRingUp(ring2, speed);
-    }
-    if (keys['3']) {
-        moveRingUp(ring3, speed);
-    }
-
+    update()
     render();
     requestAnimationFrame(animate);
 }
