@@ -76,7 +76,6 @@ function addObjectsToRing(ringReferencial, ring) {
         new THREE.OctahedronGeometry(1, 0),
         new THREE.IcosahedronGeometry(1, 0)
     ];
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ffff });
 
     const radius = (ring.geometry.innerRadius + ring.geometry.outerRadius) / 2;
 
@@ -84,6 +83,10 @@ function addObjectsToRing(ringReferencial, ring) {
         let angle = 2 * Math.PI / 8 * i; // Divide the circle into 8 parts
         let x = radius * Math.cos(angle);
         let z = radius * Math.sin(angle);
+
+        const color = new THREE.Color(Math.random() * 0xffffff);
+        const material = new THREE.MeshStandardMaterial({ color: color });
+
         createObject(ringReferencial, geometries[i], material, [x, 0.5, z], [1, 1, 1], [0, 0, 0]);
     }
 }
