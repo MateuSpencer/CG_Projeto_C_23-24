@@ -65,8 +65,17 @@ function createRingWithThickness(innerRadius, outerRadius, thickness, radialSegm
     return geometry;
 }
 
-function addSquaresToRing(ringReferencial, ring) {
-    const squareGeometry = new THREE.BoxGeometry(1, 1, 1);
+function addObjectsToRing(ringReferencial, ring) {
+    const geometries = [
+        new THREE.BoxGeometry(1, 1, 1),
+        new THREE.SphereGeometry(0.5, 32, 32),
+        new THREE.ConeGeometry(0.5, 1, 32),
+        new THREE.CylinderGeometry(0.5, 0.5, 1, 32),
+        new THREE.TorusGeometry(0.5, 0.2, 16, 100),
+        new THREE.TetrahedronGeometry(1, 0),
+        new THREE.OctahedronGeometry(1, 0),
+        new THREE.IcosahedronGeometry(1, 0)
+    ];
     const material = new THREE.MeshStandardMaterial({ color: 0x00ffff });
 
     const radius = (ring.geometry.innerRadius + ring.geometry.outerRadius) / 2;
@@ -75,8 +84,7 @@ function addSquaresToRing(ringReferencial, ring) {
         let angle = 2 * Math.PI / 8 * i; // Divide the circle into 8 parts
         let x = radius * Math.cos(angle);
         let z = radius * Math.sin(angle);
-        console.log("x: " + x + " z: " + z);
-        createObject(ringReferencial, squareGeometry, material, [x, 0, z], [1, 1, 1], [0, 0, 0]);
+        createObject(ringReferencial, geometries[i], material, [x, 0.5, z], [1, 1, 1], [0, 0, 0]);
     }
 }
 
@@ -94,21 +102,21 @@ function createCarrossel(x, z) {
     const ringGeometry1 = createRingWithThickness(5, 7, ringThickness, 32);
     ring1Referencial = createReferencial(sceneReferencial, [0, 2, 0], identityVector, zeroVector);
     ring1 = createObject(ring1Referencial, ringGeometry1, material, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
-    addSquaresToRing(ring1Referencial, ring1);
+    addObjectsToRing(ring1Referencial, ring1);
     ring1.direction = 'up';
 
     // ring 2
     const ringGeometry2 = createRingWithThickness(3, 5, ringThickness, 32);
     ring2Referencial = createReferencial(sceneReferencial, [0, 4, 0], identityVector, zeroVector);
     ring2 = createObject(ring2Referencial, ringGeometry2, material, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
-    addSquaresToRing(ring2Referencial, ring2);
+    addObjectsToRing(ring2Referencial, ring2);
     ring2.direction = 'up';
 
     // ring 3
     const ringGeometry3 = createRingWithThickness(1, 3, ringThickness, 32);
     ring3Referencial = createReferencial(sceneReferencial, [0, 6, 0], identityVector, zeroVector);
     ring3 = createObject(ring3Referencial, ringGeometry3, material, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
-    addSquaresToRing(ring3Referencial, ring3);
+    addObjectsToRing(ring3Referencial, ring3);
     ring3.direction = 'up';
 
     return sceneReferencial;
