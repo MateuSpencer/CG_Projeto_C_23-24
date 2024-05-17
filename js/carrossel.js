@@ -57,106 +57,60 @@ function createRingWithThickness(innerRadius, outerRadius, thickness, radialSegm
     };
 
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+
+    geometry.innerRadius = innerRadius;
+    geometry.outerRadius = outerRadius;
+
     return geometry;
+}
+
+function addSquaresToRing(ringReferencial, ring) {
+    const squareGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const material = new THREE.MeshStandardMaterial({ color: 0x00ffff });
+
+    const radius = (ring.geometry.innerRadius + ring.geometry.outerRadius) / 2;
+
+    for (let i = 0; i < 8; i++) {
+        let angle = 2 * Math.PI / 8 * i; // Divide the circle into 8 parts
+        let x = radius * Math.cos(angle);
+        let z = radius * Math.sin(angle);
+        console.log("x: " + x + " z: " + z);
+        createObject(ringReferencial, squareGeometry, material, [x, 0, z], [1, 1, 1], [0, 0, 0]);
+    }
 }
 
 function createCarrossel(x, z) {
     'use strict';
-    const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 10);
+    const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 8);
     const material = new THREE.MeshStandardMaterial({ color: 0xff0000, side: THREE.DoubleSide });
 
     const sceneReferencial = createReferencial(scene, [x, 0, z], identityVector, zeroVector);
 
     // cylinder
-    cylinder = createObject(sceneReferencial, cylinderGeometry, material, [0, 4, 0], [1, 0.8, 1], zeroVector);
+    cylinder = createObject(sceneReferencial, cylinderGeometry, material, [0, 4, 0], [1, 1, 1], zeroVector);
 
     // ring 1
     const ringGeometry1 = createRingWithThickness(5, 7, ringThickness, 32);
     ring1 = createObject(sceneReferencial, ringGeometry1, material, [0, 2, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
+    const ring1Referencial = createReferencial(sceneReferencial, [0, 2, 0], identityVector, zeroVector);
+    addSquaresToRing(ring1Referencial, ring1);
     ring1.direction = 'up';
 
     // ring 2
     const ringGeometry2 = createRingWithThickness(3, 5, ringThickness, 32);
     ring2 = createObject(sceneReferencial, ringGeometry2, material, [0, 4, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
+    const ring2Referencial = createReferencial(sceneReferencial, [0, 4, 0], identityVector, zeroVector);
+    addSquaresToRing(ring2Referencial, ring2);
     ring2.direction = 'up';
 
     // ring 3
     const ringGeometry3 = createRingWithThickness(1, 3, ringThickness, 32);
     ring3 = createObject(sceneReferencial, ringGeometry3, material, [0, 6, 0], [1, 1, 1], [Math.PI / 2, 0, 0]);
+    const ring3Referencial = createReferencial(sceneReferencial, [0, 6, 0], identityVector, zeroVector);
+    addSquaresToRing(ring3Referencial, ring3);
     ring3.direction = 'up';
 
     return sceneReferencial;
-}
-
-
-function createSquare(x, z) {
-    'use strict';
-    const boxGeometry = new THREE.BoxGeometry(2, 2, 2);
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-
-    const objectY = boxGeometry.parameters.height / 2;
-
-    const boxReferencial = createReferencial(scene, [x, objectY, z], identityVector, zeroVector);
-
-    createObject(boxReferencial, boxGeometry, material, zeroVector, [1, 1, 1], zeroVector);
-
-    return boxReferencial;
-}
-
-function createDodecahedron(x, z) {
-    'use strict';
-    const dodecahedronGeometry = new THREE.DodecahedronGeometry(2.5, 3);
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-
-    const objectY = dodecahedronGeometry.parameters.radius / 2;
-
-    const dodecahedronReferencial = createReferencial(scene, [x, objectY, z], identityVector, zeroVector);
-
-    createObject(dodecahedronReferencial, dodecahedronGeometry, material, zeroVector, [1, 1, 1], zeroVector);
-
-    return dodecahedronReferencial;
-}
-
-function createIcosahedron(x, z) {
-    'use strict';
-    const icosahedronGeometry = new THREE.IcosahedronGeometry(1.3, 1);
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-
-    const objectY = icosahedronGeometry.parameters.radius / 2;
-
-    const icosahedronReferencial = createReferencial(scene, [x, objectY, z], identityVector, zeroVector);
-
-    createObject(icosahedronReferencial, icosahedronGeometry, material, zeroVector, [1, 1, 1], zeroVector);
-
-    return icosahedronReferencial;
-}
-
-function createTorus(x, z) {
-    'use strict';
-    const torusGeometry = new THREE.TorusGeometry(1, 0.75, 16, 100);;
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-
-    const objectY = torusGeometry.parameters.radius / 2;
-
-    const torusReferencial = createReferencial(scene, [x, objectY, z], identityVector, zeroVector);
-
-    createObject(torusReferencial, torusGeometry, material, zeroVector, [1, 1, 1], zeroVector);
-
-    return torusReferencial;
-}
-
-function createTorusKnot(x, z) {
-    'use strict';
-    const torusKnotGeometry = new THREE.TorusKnotGeometry(1.4, 1.3, 8, 75);;
-    const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-
-    const objectY = torusKnotGeometry.parameters.radius / 2;
-
-    const torusKnotReferencial = createReferencial(scene, [x, objectY, z], identityVector, zeroVector);
-
-    createObject(torusKnotReferencial, torusKnotGeometry, material, zeroVector, [1, 1, 1], zeroVector);
-
-    return torusKnotReferencial;
 }
 
 function createScene() {
@@ -215,7 +169,6 @@ function init() {
 
     createScene();
     setupCameras();
-    render();
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener('keyup', onKeyUp);
@@ -226,7 +179,7 @@ function init() {
 function moveRing(ring, speed) {
     let cylinderHeight = cylinder.geometry.parameters.height;
     if (ring.direction === 'up') {
-        if (ring.position.y + speed <= cylinderHeight - ringThickness) {
+        if (ring.position.y + speed <= cylinderHeight) {
             ring.position.y += speed;
         } else {
             // Change direction if the ring is at the top
@@ -270,6 +223,8 @@ function update() {
     if (keys['3']) {
         moveRing(ring3, speed);
     }
+
+    cylinder.rotation.y += speed;
 }
 
 function animate() {
