@@ -86,8 +86,16 @@ function addObjectsToRing(ringReferencial, ring) {
 
         const color = new THREE.Color(Math.random() * 0xffffff);
         const material = new THREE.MeshStandardMaterial({ color: color });
+        
+        const rotation = [Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI];
+        const scale = [Math.random() * 2, Math.random() * 2, Math.random() * 2];
 
-        createObject(ringReferencial, geometries[i], material, [x, 0.5, z], [1, 1, 1], [0, 0, 0]);
+        const object = createObject(ringReferencial, geometries[i], material, [x, 1, z], scale, rotation);
+
+        const spotlight = new THREE.SpotLight(0xffffff, 1);
+        spotlight.position.set(x, 0, z);
+        spotlight.target = object;
+        ringReferencial.add(spotlight);
     }
 }
 
