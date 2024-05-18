@@ -17,6 +17,7 @@ let directionalLight;
 
 let keys = {};
 let objects = [];
+let spotlights = [];
 
 function createMobiusStrip(uSegments, vSegments, radius, width) {
     const geometry = new THREE.BufferGeometry();
@@ -150,6 +151,7 @@ function addObjectsToRing(ringReferencial, ring) {
         spotlight.position.set(x, 0, z);
         spotlight.target = object;
         ringReferencial.add(spotlight);
+        spotlights.push(spotlight);
     }
 }
 
@@ -279,6 +281,16 @@ function onKeyDown(e) {
         } else {
             directionalLight.intensity = 0;
         }
+    }
+
+    if (e.key.toLowerCase() == 's') {
+        spotlights.forEach(spotlight => {
+            if (spotlight.intensity === 0) {
+                spotlight.intensity = 0.8;
+            } else {
+                spotlight.intensity = 0;
+            }
+        });
     }
 }
 
