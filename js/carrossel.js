@@ -16,6 +16,7 @@ let activeCamera, controls;
 let directionalLight; 
 
 let keys = {};
+let objects = [];
 
 function createObject(parent, geometry, material, position, scale, rotation) {
     'use strict';
@@ -91,6 +92,8 @@ function addObjectsToRing(ringReferencial, ring) {
         const scale = [Math.random() * 2, Math.random() * 2, Math.random() * 2];
 
         const object = createObject(ringReferencial, geometries[i], material, [x, 1, z], scale, rotation);
+
+        objects.push(object);
 
         const spotlight = new THREE.SpotLight(0xffffff, 1);
         spotlight.position.set(x, 0, z);
@@ -181,7 +184,6 @@ function render() {
     renderer.render(scene, activeCamera);
 }
 
-
 function init() {
     'use strict';
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -194,7 +196,6 @@ function init() {
     window.addEventListener('keyup', onKeyUp);
     window.addEventListener("resize", onResize);
 }
-
 
 function moveRing(ring, ringReferencial, speed) {
     let cylinderHeight = cylinder.geometry.parameters.height;
@@ -244,16 +245,21 @@ function update() {
         moveRing(ring3, ring3Referencial, speed);
     }
 
+    objects.forEach(object => {
+        object.rotation.x += speed;
+    });
+
     cylinder.rotation.y += speed;
 }
 
 function animate() {
     'use strict';
 
-    update()
+    update();
     render();
     requestAnimationFrame(animate);
 }
 
 init();
 requestAnimationFrame(animate);
+
