@@ -273,7 +273,7 @@ function onKeyDown(e) {
     'use strict';
     keys[e.key.toLowerCase()] = true;
 
-    if (e.key.toLowerCase() === 'q') {
+    if (e.key.toLowerCase() === 'd') {
         if (directionalLight.intensity === 0) {
             directionalLight.intensity = 0.8;
         } else {
