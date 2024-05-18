@@ -18,6 +18,57 @@ let directionalLight;
 let keys = {};
 let objects = [];
 
+function createMobiusStrip(uSegments, vSegments, radius, width) {
+    const geometry = new THREE.BufferGeometry();
+    const vertices = [];
+    const indices = [];
+
+    for (let i = 0; i <= uSegments; i++) {
+        const u = i / uSegments * Math.PI * 2;
+        for (let j = 0; j <= vSegments; j++) {
+            const v = j / vSegments - 0.5;
+
+            const x = (radius + v * Math.cos(u / 2)) * Math.cos(u);
+            const y = (radius + v * Math.cos(u / 2)) * Math.sin(u);
+            const z = v * Math.sin(u / 2);
+
+            vertices.push(x, y, z);
+
+            if (i < uSegments && j < vSegments) {
+                const a = i * (vSegments + 1) + j;
+                const b = i * (vSegments + 1) + j + 1;
+                const c = (i + 1) * (vSegments + 1) + j;
+                const d = (i + 1) * (vSegments + 1) + j + 1;
+
+                indices.push(a, b, d);
+                indices.push(a, d, c);
+            }
+        }
+    }
+
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+
+    return geometry;
+}
+
+function addMobiusStrip(scene, cylinder) {
+    const radius = 3; // Radius of the Möbius strip
+    const width = 1;  // Width of the Möbius strip
+    const uSegments = 30; // Number of segments along the u direction
+    const vSegments = 10; // Number of segments along the v direction
+
+    const mobiusGeometry = createMobiusStrip(uSegments, vSegments, radius, width);
+    const mobiusMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+    const mobiusMesh = new THREE.Mesh(mobiusGeometry, mobiusMaterial);
+
+    mobiusMesh.position.set(0, cylinder.geometry.parameters.height + 5, 0);
+    mobiusMesh.rotation.set(Math.PI / 2, 0, 0);
+
+    scene.add(mobiusMesh);
+}
+
 function createObject(parent, geometry, material, position, scale, rotation) {
     'use strict';
     const mesh = new THREE.Mesh(geometry, material);
@@ -195,6 +246,8 @@ function init() {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     window.addEventListener("resize", onResize);
+
+    addMobiusStrip(scene, cylinder);
 }
 
 function moveRing(ring, ringReferencial, speed) {
