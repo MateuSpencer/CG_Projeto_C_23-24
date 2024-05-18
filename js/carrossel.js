@@ -19,6 +19,26 @@ let keys = {};
 let objects = [];
 let spotlights = [];
 
+function createSkydome(radius, widthSegments, heightSegments, texture) {
+    const geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI / 2);
+    const material = new THREE.MeshStandardMaterial({ map: texture, side: THREE.DoubleSide});
+    const skydome = new THREE.Mesh(geometry, material);
+    return skydome;
+}
+
+function addSkydome() {
+    const radius = 30;
+    const widthSegments = 32;
+    const heightSegments = 16;
+
+    const loader = new THREE.TextureLoader();
+    loader.load('../img/frame.png', function (texture) {
+        const skydome = createSkydome(radius, widthSegments, heightSegments, texture);
+        skydome.position.set(0, 0, 0);
+        scene.add(skydome);
+    });
+}
+
 function createMobiusStrip(uSegments, vSegments, radius, width) {
     const geometry = new THREE.BufferGeometry();
     const vertices = [];
@@ -250,6 +270,7 @@ function init() {
     window.addEventListener("resize", onResize);
 
     addMobiusStrip(scene, cylinder);
+    //addSkydome();
 }
 
 function moveRing(ring, ringReferencial, speed) {
