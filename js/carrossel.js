@@ -7,7 +7,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 const identityVector = [1, 1, 1], zeroVector = [0, 0, 0];
 
 let cylinder, ring1, ring2, ring3;
-let ring1Referencial, ring2Referencial, ring3Referencial;
+let cylinderReferencial, ring1Referencial, ring2Referencial, ring3Referencial;
 let ringThickness = 2;
 let speed = 0.1; 
 
@@ -74,20 +74,16 @@ function createMobiusStrip(uSegments, vSegments, radius, width) {
     return geometry;
 }
 
-function addMobiusStrip(scene, cylinder) {
-    const radius = 3; // Radius of the Möbius strip
+function addMobiusStrip(cylinder, cylinderReferencial) {
+    const radius = 2; // Radius of the Möbius strip
     const width = 1;  // Width of the Möbius strip
     const uSegments = 30; // Number of segments along the u direction
     const vSegments = 10; // Number of segments along the v direction
 
     const mobiusGeometry = createMobiusStrip(uSegments, vSegments, radius, width);
     const mobiusMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
-    const mobiusMesh = new THREE.Mesh(mobiusGeometry, mobiusMaterial);
 
-    mobiusMesh.position.set(0, cylinder.geometry.parameters.height + 5, 0);
-    mobiusMesh.rotation.set(Math.PI / 2, 0, 0);
-
-    scene.add(mobiusMesh);
+    createObject(cylinderReferencial, mobiusGeometry, mobiusMaterial, [0, cylinder.geometry.parameters.height - 1, 0], identityVector, [Math.PI / 2, 0, 0]);
 }
 
 function createObject(parent, geometry, material, position, scale, rotation) {
@@ -183,7 +179,8 @@ function createCarrossel(x, z) {
     const sceneReferencial = createReferencial(scene, [x, 0, z], identityVector, zeroVector);
 
     // cylinder
-    cylinder = createObject(sceneReferencial, cylinderGeometry, material, [0, 4, 0], [1, 1, 1], zeroVector);
+    cylinderReferencial = createReferencial(sceneReferencial, [0, 4, 0], identityVector, zeroVector);
+    cylinder = createObject(cylinderReferencial, cylinderGeometry, material, zeroVector, [1, 1, 1], zeroVector);
 
     // ring 1
     const ringGeometry1 = createRingWithThickness(5, 7, ringThickness, 32);
@@ -221,6 +218,8 @@ function createScene() {
     scene.add(directionalLight);
 
     createCarrossel(0, 0).name = "Carrossel";
+    addMobiusStrip(cylinder, cylinderReferencial);
+    //addSkydome();
 }
 
 function setupCameras() {
@@ -268,9 +267,6 @@ function init() {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     window.addEventListener("resize", onResize);
-
-    addMobiusStrip(scene, cylinder);
-    //addSkydome();
 }
 
 function moveRing(ring, ringReferencial, speed) {
@@ -335,7 +331,7 @@ function update() {
         object.rotation.x += speed;
     });
 
-    cylinder.rotation.y += speed;
+    cylinderReferencial.rotation.y += speed;
 }
 
 function animate() {
