@@ -226,7 +226,7 @@ function createScene() {
     let light = new THREE.AmbientLight(0xffffff, 0.1);
     scene.add(light);
 
-    directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight = new THREE.DirectionalLight(0xff8c00, 0.8);
     directionalLight.position.set(0, Math.tan(Math.PI / 4), 1);
     scene.add(directionalLight);
 
