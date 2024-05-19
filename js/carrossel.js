@@ -6,7 +6,7 @@ const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 const identityVector = [1, 1, 1], zeroVector = [0, 0, 0];
 
-let cylinder, ring1, ring2, ring3, mobiusStrip;
+let cylinder, ring1, ring2, ring3, mobiusStrip, skydome;
 let cylinderReferencial, ring1Referencial, ring2Referencial, ring3Referencial;
 let ringThickness = 2;
 let speed = 0.1; 
@@ -22,8 +22,14 @@ const pointlights = [];
 
 function createSkydome(radius, widthSegments, heightSegments, texture) {
     const geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI / 2);
-    const material = new THREE.MeshStandardMaterial({ map: texture, side: THREE.DoubleSide});
-    const skydome = new THREE.Mesh(geometry, material);
+    const materials = [
+        new THREE.MeshLambertMaterial({ map: texture, side: THREE.DoubleSide }),
+        new THREE.MeshPhongMaterial({ map: texture, side: THREE.DoubleSide }),
+        new THREE.MeshToonMaterial({ map: texture, side: THREE.DoubleSide }),
+        new THREE.MeshNormalMaterial({ side: THREE.DoubleSide })
+    ];
+    skydome = new THREE.Mesh(geometry, materials[0]);
+    skydome.materials = materials;
     return skydome;
 }
 
@@ -254,7 +260,7 @@ function createScene() {
 
     createCarrossel(0, 0).name = "Carrossel";
     addMobiusStrip(cylinder, cylinderReferencial);
-    //addSkydome();
+    addSkydome();
 }
 
 function setupCameras() {
@@ -410,6 +416,7 @@ function switchMaterial(materialType) {
             ring1.material = ring1.materials[0];
             ring2.material = ring2.materials[0];
             ring3.material = ring3.materials[0];
+            skydome.material = skydome.materials[0];
             break;
         case 'MeshPhongMaterial':
             mobiusStrip.material = mobiusStrip.materials[1];
@@ -417,6 +424,7 @@ function switchMaterial(materialType) {
             ring1.material = ring1.materials[1];
             ring2.material = ring2.materials[1];
             ring3.material = ring3.materials[1];
+            skydome.material = skydome.materials[1];
             break;
         case 'MeshToonMaterial':
             mobiusStrip.material = mobiusStrip.materials[2];
@@ -424,6 +432,7 @@ function switchMaterial(materialType) {
             ring1.material = ring1.materials[2];
             ring2.material = ring2.materials[2];
             ring3.material = ring3.materials[2];
+            skydome.material = skydome.materials[2];
             break;
         case 'MeshNormalMaterial':
             mobiusStrip.material = mobiusStrip.materials[3];
@@ -431,6 +440,7 @@ function switchMaterial(materialType) {
             ring1.material = ring1.materials[3];
             ring2.material = ring2.materials[3];
             ring3.material = ring3.materials[3];
+            skydome.material = skydome.materials[3];
             break;
     }
 }
