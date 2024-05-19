@@ -291,24 +291,6 @@ function moveRing(ring, ringReferencial, speed) {
 function onKeyDown(e) {
     'use strict';
     keys[e.key.toLowerCase()] = true;
-
-    if (e.key.toLowerCase() === 'd') {
-        if (directionalLight.intensity === 0) {
-            directionalLight.intensity = 0.8;
-        } else {
-            directionalLight.intensity = 0;
-        }
-    }
-
-    if (e.key.toLowerCase() == 's') {
-        spotlights.forEach(spotlight => {
-            if (spotlight.intensity === 0) {
-                spotlight.intensity = 0.8;
-            } else {
-                spotlight.intensity = 0;
-            }
-        });
-    }
 }
 
 function onKeyUp(e) {
@@ -325,6 +307,24 @@ function update() {
     }
     if (keys['3']) {
         moveRing(ring3, ring3Referencial, speed);
+    }
+    if (keys['d']) {
+        if (directionalLight.intensity === 0) {
+            directionalLight.intensity = 0.8;
+        } else {
+            directionalLight.intensity = 0;
+        }
+        keys['d'] = false;
+    }
+    if (keys['e']) {
+        spotlights.forEach(spotlight => {
+            if (spotlight.intensity === 0) {
+                spotlight.intensity = 0.8;
+            } else {
+                spotlight.intensity = 0;
+            }
+        });
+        keys['e'] = false;
     }
 
     objects.forEach(object => {
