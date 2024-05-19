@@ -325,12 +325,21 @@ function update() {
         directionalLight.intensity = directionalLight.intensity === 0 ? 0.8 : 0;
         keys['d'] = false;
     }
-    if (keys['s']) {
+    if (keys['p']) {
         spotlights.forEach(spotlight => {
-            spotlight.intensity = spotlight.intensity === 0 ? 0.8 : 0;
+            spotlight.intensity = spotlight.intensity = 1;
         });
         pointlights.forEach(pointlight => {
-            pointlight.intensity = pointlight.intensity === 0 ? 0.8 : 0;
+            pointlight.intensity = pointlight.intensity = 1;
+        });
+        keys['p'] = false;
+    }
+    if (keys['s']) {
+        spotlights.forEach(spotlight => {
+            spotlight.intensity = spotlight.intensity = 0;
+        });
+        pointlights.forEach(pointlight => {
+            pointlight.intensity = pointlight.intensity = 0;
         });
         keys['s'] = false;
     }
