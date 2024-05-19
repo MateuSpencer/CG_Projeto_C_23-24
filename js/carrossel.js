@@ -6,7 +6,7 @@ const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 const identityVector = [1, 1, 1], zeroVector = [0, 0, 0];
 
-let cylinder, ring1, ring2, ring3;
+let cylinder, ring1, ring2, ring3, mobiusStrip;
 let cylinderReferencial, ring1Referencial, ring2Referencial, ring3Referencial;
 let ringThickness = 2;
 let speed = 0.1; 
@@ -82,9 +82,16 @@ function addMobiusStrip(cylinder, cylinderReferencial) {
     const vSegments = 10; // Number of segments along the v direction
 
     const mobiusGeometry = createMobiusStrip(uSegments, vSegments, radius, width);
-    const mobiusMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+    
+    const materials = [
+        new THREE.MeshLambertMaterial({ color: 0x00ff00, side: THREE.DoubleSide }),
+        new THREE.MeshPhongMaterial({ color: 0x00ff00, side: THREE.DoubleSide }),
+        new THREE.MeshToonMaterial({ color: 0x00ff00, side: THREE.DoubleSide }),
+        new THREE.MeshNormalMaterial({ side: THREE.DoubleSide })
+    ];
 
-    const mobiusStrip = createObject(cylinderReferencial, mobiusGeometry, mobiusMaterial, [0, cylinder.geometry.parameters.height - 1, 0], identityVector, [Math.PI / 2, 0, 0]);
+    mobiusStrip = createObject(cylinderReferencial, mobiusGeometry, materials, [0, cylinder.geometry.parameters.height - 1, 0], identityVector, [Math.PI / 2, 0, 0]);
+    mobiusStrip.materials = materials; // Store materials for later use
 
     // point lights
     for (let i = 0; i < 8; i++) {
@@ -99,9 +106,9 @@ function addMobiusStrip(cylinder, cylinderReferencial) {
     }
 }
 
-function createObject(parent, geometry, material, position, scale, rotation) {
+function createObject(parent, geometry, materials, position, scale, rotation) {
     'use strict';
-    const mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, materials[0]);
     mesh.scale.set(scale[0], scale[1], scale[2]);
     mesh.rotation.set(rotation[0], rotation[1], rotation[2]);
     mesh.position.set(position[0], position[1], position[2]);
@@ -167,12 +174,18 @@ function addObjectsToRing(ringReferencial, ring) {
         let z = radius * Math.sin(angle);
 
         const color = new THREE.Color(Math.random() * 0xffffff);
-        const material = new THREE.MeshStandardMaterial({ color: color });
+        const materials = [
+            new THREE.MeshLambertMaterial({ color: color }),
+            new THREE.MeshPhongMaterial({ color: color }),
+            new THREE.MeshToonMaterial({ color: color }),
+            new THREE.MeshNormalMaterial()
+        ];
         
         const rotation = [Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI];
         const scale = [Math.random() * 2, Math.random() * 2, Math.random() * 2];
 
-        const object = createObject(ringReferencial, geometries[i], material, [x, 1, z], scale, rotation);
+        const object = createObject(ringReferencial, geometries[i], materials, [x, 1, z], scale, rotation);
+        object.materials = materials; // Store materials for later use
 
         objects.push(object);
 
@@ -187,34 +200,43 @@ function addObjectsToRing(ringReferencial, ring) {
 function createCarrossel(x, z) {
     'use strict';
     const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 8);
-    const material = new THREE.MeshStandardMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+    const materials = [
+        new THREE.MeshLambertMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
+        new THREE.MeshPhongMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
+        new THREE.MeshToonMaterial({ color: 0xff0000, side: THREE.DoubleSide }),
+        new THREE.MeshNormalMaterial()
+    ];
 
     const sceneReferencial = createReferencial(scene, [x, 0, z], identityVector, zeroVector);
 
     // cylinder
     cylinderReferencial = createReferencial(sceneReferencial, [0, 4, 0], identityVector, zeroVector);
-    cylinder = createObject(cylinderReferencial, cylinderGeometry, material, zeroVector, [1, 1, 1], zeroVector);
+    cylinder = createObject(cylinderReferencial, cylinderGeometry, materials, zeroVector, [1, 1, 1], zeroVector);
+    cylinder.materials = materials;
 
     // ring 1
     const ringGeometry1 = createRingWithThickness(5, 7, ringThickness, 32);
     ring1Referencial = createReferencial(sceneReferencial, [0, 2, 0], identityVector, zeroVector);
-    ring1 = createObject(ring1Referencial, ringGeometry1, material, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
+    ring1 = createObject(ring1Referencial, ringGeometry1, materials, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
     addObjectsToRing(ring1Referencial, ring1);
     ring1.direction = 'up';
+    ring1.materials = materials;
 
     // ring 2
     const ringGeometry2 = createRingWithThickness(3, 5, ringThickness, 32);
     ring2Referencial = createReferencial(sceneReferencial, [0, 4, 0], identityVector, zeroVector);
-    ring2 = createObject(ring2Referencial, ringGeometry2, material, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
+    ring2 = createObject(ring2Referencial, ringGeometry2, materials, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
     addObjectsToRing(ring2Referencial, ring2);
     ring2.direction = 'up';
+    ring2.materials = materials;
 
     // ring 3
     const ringGeometry3 = createRingWithThickness(1, 3, ringThickness, 32);
     ring3Referencial = createReferencial(sceneReferencial, [0, 6, 0], identityVector, zeroVector);
-    ring3 = createObject(ring3Referencial, ringGeometry3, material, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
+    ring3 = createObject(ring3Referencial, ringGeometry3, materials, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
     addObjectsToRing(ring3Referencial, ring3);
     ring3.direction = 'up';
+    ring3.materials = materials;
 
     return sceneReferencial;
 }
@@ -320,28 +342,40 @@ function update() {
     }
     if (keys['3']) {
         moveRing(ring3, ring3Referencial, speed);
-    } 
+    }
     if (keys['d']) {
         directionalLight.intensity = directionalLight.intensity === 0 ? 0.8 : 0;
         keys['d'] = false;
     }
     if (keys['p']) {
         spotlights.forEach(spotlight => {
-            spotlight.intensity = spotlight.intensity = 1;
+            spotlight.intensity = 1;
         });
         pointlights.forEach(pointlight => {
-            pointlight.intensity = pointlight.intensity = 1;
+            pointlight.intensity = 1;
         });
         keys['p'] = false;
     }
     if (keys['s']) {
         spotlights.forEach(spotlight => {
-            spotlight.intensity = spotlight.intensity = 0;
+            spotlight.intensity = 0;
         });
         pointlights.forEach(pointlight => {
-            pointlight.intensity = pointlight.intensity = 0;
+            pointlight.intensity = 0;
         });
         keys['s'] = false;
+    }
+    if (keys['q']) {
+        switchMaterial('MeshLambertMaterial');
+    }
+    if (keys['w']) {
+        switchMaterial('MeshPhongMaterial');
+    }
+    if (keys['e']) {
+        switchMaterial('MeshToonMaterial');
+    }
+    if (keys['r']) {
+        switchMaterial('MeshNormalMaterial');
     }
 
     objects.forEach(object => {
@@ -349,6 +383,56 @@ function update() {
     });
 
     cylinderReferencial.rotation.y += speed;
+}
+
+function switchMaterial(materialType) {
+    objects.forEach(object => {
+        switch (materialType) {
+            case 'MeshLambertMaterial':
+                object.material = object.materials[0];
+                break;
+            case 'MeshPhongMaterial':
+                object.material = object.materials[1];
+                break;
+            case 'MeshToonMaterial':
+                object.material = object.materials[2];
+                break;
+            case 'MeshNormalMaterial':
+                object.material = object.materials[3];
+                break;
+        }
+    });
+
+    switch (materialType) {
+        case 'MeshLambertMaterial':
+            mobiusStrip.material = mobiusStrip.materials[0];
+            cylinder.material = cylinder.materials[0];
+            ring1.material = ring1.materials[0];
+            ring2.material = ring2.materials[0];
+            ring3.material = ring3.materials[0];
+            break;
+        case 'MeshPhongMaterial':
+            mobiusStrip.material = mobiusStrip.materials[1];
+            cylinder.material = cylinder.materials[1];
+            ring1.material = ring1.materials[1];
+            ring2.material = ring2.materials[1];
+            ring3.material = ring3.materials[1];
+            break;
+        case 'MeshToonMaterial':
+            mobiusStrip.material = mobiusStrip.materials[2];
+            cylinder.material = cylinder.materials[2];
+            ring1.material = ring1.materials[2];
+            ring2.material = ring2.materials[2];
+            ring3.material = ring3.materials[2];
+            break;
+        case 'MeshNormalMaterial':
+            mobiusStrip.material = mobiusStrip.materials[3];
+            cylinder.material = cylinder.materials[3];
+            ring1.material = ring1.materials[3];
+            ring2.material = ring2.materials[3];
+            ring3.material = ring3.materials[3];
+            break;
+    }
 }
 
 function animate() {
@@ -361,4 +445,5 @@ function animate() {
 
 init();
 requestAnimationFrame(animate);
+
 
