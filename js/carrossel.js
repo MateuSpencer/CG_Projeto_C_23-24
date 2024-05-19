@@ -18,6 +18,7 @@ let directionalLight;
 let keys = {};
 let objects = [];
 let spotlights = [];
+const pointlights = [];
 
 function createSkydome(radius, widthSegments, heightSegments, texture) {
     const geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI / 2);
@@ -83,7 +84,19 @@ function addMobiusStrip(cylinder, cylinderReferencial) {
     const mobiusGeometry = createMobiusStrip(uSegments, vSegments, radius, width);
     const mobiusMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
 
-    createObject(cylinderReferencial, mobiusGeometry, mobiusMaterial, [0, cylinder.geometry.parameters.height - 1, 0], identityVector, [Math.PI / 2, 0, 0]);
+    const mobiusStrip = createObject(cylinderReferencial, mobiusGeometry, mobiusMaterial, [0, cylinder.geometry.parameters.height - 1, 0], identityVector, [Math.PI / 2, 0, 0]);
+
+    // point lights
+    for (let i = 0; i < 8; i++) {
+        const angle = 2 * Math.PI / 8 * i; // Divide the circle into 8 parts
+        const x = radius * Math.cos(angle);
+        const z = radius * Math.sin(angle);
+
+        const pointlight = new THREE.PointLight(0xffffff, 1);
+        pointlight.position.set(x, 0, z);
+        mobiusStrip.add(pointlight);
+        pointlights.push(pointlight);
+    }
 }
 
 function createObject(parent, geometry, material, position, scale, rotation) {
@@ -307,14 +320,17 @@ function update() {
     }
     if (keys['3']) {
         moveRing(ring3, ring3Referencial, speed);
-    }
+    } 
     if (keys['d']) {
         directionalLight.intensity = directionalLight.intensity === 0 ? 0.8 : 0;
         keys['d'] = false;
     }
     if (keys['s']) {
         spotlights.forEach(spotlight => {
-            spotlight.intensity =(spotlight.intensity === 0 ? 0.8 : 0);
+            spotlight.intensity = spotlight.intensity === 0 ? 0.8 : 0;
+        });
+        pointlights.forEach(pointlight => {
+            pointlight.intensity = pointlight.intensity === 0 ? 0.8 : 0;
         });
         keys['s'] = false;
     }
