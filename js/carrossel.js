@@ -249,8 +249,6 @@ function createCarrossel(x, z) {
 
 function createScene() {
     'use strict';
-    scene.add(new THREE.AxesHelper(20));
-
     let light = new THREE.AmbientLight(0xffffff, 0.1);
     scene.add(light);
 
@@ -268,7 +266,7 @@ function setupCameras() {
 
     // Perspective camera
     const cameraPerspective = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
-    cameraPerspective.position.set(30, 60, 60);
+    cameraPerspective.position.set(-17, 17, 17);
     cameraPerspective.lookAt(0, 0, 0);
     cameras.push(cameraPerspective);
 
