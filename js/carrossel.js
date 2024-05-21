@@ -160,6 +160,43 @@ function createRingWithThickness(innerRadius, outerRadius, thickness, radialSegm
     return geometry;
 }
 
+function createHyperboloid(radius, height, radialSegments, heightSegments) {
+    const geometry = new THREE.BufferGeometry();
+    const vertices = [];
+    const indices = [];
+
+    for (let i = 0; i <= heightSegments; i++) {
+        const v = (i / heightSegments - 0.5) * height;
+        const currentRadius = radius * Math.sqrt(1 + (v / height) * (v / height));
+        
+        for (let j = 0; j <= radialSegments; j++) {
+            const u = j / radialSegments * Math.PI * 2;
+
+            const x = currentRadius * Math.cos(u);
+            const y = currentRadius * Math.sin(u);
+            const z = v;
+
+            vertices.push(x, y, z);
+
+            if (i < heightSegments && j < radialSegments) {
+                const a = i * (radialSegments + 1) + j;
+                const b = i * (radialSegments + 1) + j + 1;
+                const c = (i + 1) * (radialSegments + 1) + j;
+                const d = (i + 1) * (radialSegments + 1) + j + 1;
+
+                indices.push(a, b, d);
+                indices.push(a, d, c);
+            }
+        }
+    }
+
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+
+    return geometry;
+}
+
 function addObjectsToRing(ringReferencial, ring) {
     const geometries = [
         new THREE.BoxGeometry(1, 1, 1),
@@ -169,7 +206,7 @@ function addObjectsToRing(ringReferencial, ring) {
         new THREE.TorusGeometry(0.5, 0.2, 16, 100),
         new THREE.TetrahedronGeometry(1, 0),
         new THREE.OctahedronGeometry(1, 0),
-        new THREE.IcosahedronGeometry(1, 0)
+        createHyperboloid(0.5, 1, 20, 20)
     ];
 
     const radius = (ring.geometry.innerRadius + ring.geometry.outerRadius) / 2;
@@ -181,9 +218,9 @@ function addObjectsToRing(ringReferencial, ring) {
 
         const color = new THREE.Color(Math.random() * 0xffffff);
         const materials = [
-            new THREE.MeshLambertMaterial({ color: color }),
-            new THREE.MeshPhongMaterial({ color: color }),
-            new THREE.MeshToonMaterial({ color: color }),
+            new THREE.MeshLambertMaterial({ color: color, side: THREE.DoubleSide }),
+            new THREE.MeshPhongMaterial({ color: color, side: THREE.DoubleSide }),
+            new THREE.MeshToonMaterial({ color: color, side: THREE.DoubleSide }),
             new THREE.MeshNormalMaterial()
         ];
         
