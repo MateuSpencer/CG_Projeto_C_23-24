@@ -341,6 +341,10 @@ function init() {
     createScene();
     setupCameras();
 
+    keys['1'] = true;
+    keys['2'] = true;
+    keys['3'] = true;
+
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener('keyup', onKeyUp);
     window.addEventListener("resize", onResize);
