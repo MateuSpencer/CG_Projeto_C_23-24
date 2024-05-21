@@ -46,7 +46,7 @@ function addSkydome() {
     });
 }
 
-function createMobiusStrip(uSegments, vSegments, radius, width) {
+function createMobiusStrip(uSegments, vSegments, radius) {
     const geometry = new THREE.BufferGeometry();
     const vertices = [];
     const indices = [];
@@ -74,6 +74,8 @@ function createMobiusStrip(uSegments, vSegments, radius, width) {
         }
     }
 
+    console.log(vertices);
+
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     geometry.computeVertexNormals();
@@ -83,11 +85,10 @@ function createMobiusStrip(uSegments, vSegments, radius, width) {
 
 function addMobiusStrip(cylinder, cylinderReferencial) {
     const radius = 2; // Radius of the Möbius strip
-    const width = 1;  // Width of the Möbius strip
     const uSegments = 30; // Number of segments along the u direction
     const vSegments = 10; // Number of segments along the v direction
 
-    const mobiusGeometry = createMobiusStrip(uSegments, vSegments, radius, width);
+    const mobiusGeometry = createMobiusStrip(uSegments, vSegments, radius);
     
     const materials = [
         new THREE.MeshLambertMaterial({ color: 0x00ff00, side: THREE.DoubleSide }),
