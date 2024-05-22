@@ -74,8 +74,6 @@ function createMobiusStrip(uSegments, vSegments, radius) {
         }
     }
 
-    console.log(vertices);
-
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
     geometry.setIndex(indices);
     geometry.computeVertexNormals();
