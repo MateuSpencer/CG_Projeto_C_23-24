@@ -9,7 +9,7 @@ const identityVector = [1, 1, 1], zeroVector = [0, 0, 0];
 let cylinder, ring1, ring2, ring3, mobiusStrip, skydome;
 let cylinderReferencial, ring1Referencial, ring2Referencial, ring3Referencial;
 let ringThickness = 2;
-let speed = 0.1; 
+let speed = 0.05; 
 
 const cameras = [];
 let activeCamera, controls;
@@ -260,7 +260,7 @@ function createCarrossel(x, z) {
 
     // ring 1
     const ringGeometry1 = createRingWithThickness(5, 7, ringThickness, 32);
-    ring1Referencial = createReferencial(sceneReferencial, [0, 2, 0], identityVector, zeroVector);
+    ring1Referencial = createReferencial(cylinderReferencial, [0, -2, 0], identityVector, zeroVector);
     ring1 = createObject(ring1Referencial, ringGeometry1, materials, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
     addObjectsToRing(ring1Referencial, ring1);
     ring1.direction = 'up';
@@ -268,7 +268,7 @@ function createCarrossel(x, z) {
 
     // ring 2
     const ringGeometry2 = createRingWithThickness(3, 5, ringThickness, 32);
-    ring2Referencial = createReferencial(sceneReferencial, [0, 4, 0], identityVector, zeroVector);
+    ring2Referencial = createReferencial(cylinderReferencial, zeroVector, identityVector, zeroVector);
     ring2 = createObject(ring2Referencial, ringGeometry2, materials, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
     addObjectsToRing(ring2Referencial, ring2);
     ring2.direction = 'up';
@@ -276,7 +276,7 @@ function createCarrossel(x, z) {
 
     // ring 3
     const ringGeometry3 = createRingWithThickness(1, 3, ringThickness, 32);
-    ring3Referencial = createReferencial(sceneReferencial, [0, 6, 0], identityVector, zeroVector);
+    ring3Referencial = createReferencial(cylinderReferencial, [0, 2, 0], identityVector, zeroVector);
     ring3 = createObject(ring3Referencial, ringGeometry3, materials, zeroVector, [1, 1, 1], [Math.PI / 2, 0, 0]);
     addObjectsToRing(ring3Referencial, ring3);
     ring3.direction = 'up';
@@ -352,15 +352,17 @@ function init() {
 
 function moveRing(ring, ringReferencial, speed) {
     let cylinderHeight = cylinder.geometry.parameters.height;
+    let ringWorldPosition = new THREE.Vector3();
+    ringReferencial.getWorldPosition(ringWorldPosition);
     if (ring.direction === 'up') {
-        if (ringReferencial.position.y + speed <= cylinderHeight) {
+        if (ringWorldPosition.y + speed <= cylinderHeight) {
             ringReferencial.position.y += speed;
         } else {
             // Change direction if the ring is at the top
             ring.direction = 'down';
         }
     } else { // ring.direction === 'down'
-        if (ringReferencial.position.y - speed >= ringThickness) {
+        if (ringWorldPosition.y - speed >= ringThickness) {
             ringReferencial.position.y -= speed;
         } else {
             // Change direction if the ring is at the bottom
@@ -428,7 +430,7 @@ function update() {
         object.rotation.x += speed;
     });
 
-    cylinderReferencial.rotation.y += speed;
+    cylinderReferencial.rotation.y += speed*0.5;
 }
 
 function switchMaterial(materialType) {
