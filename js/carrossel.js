@@ -401,24 +401,24 @@ function update() {
         moveRing(ring3, ring3Referencial, speed);
     }
     if (keys['d']) {
-        directionalLight.intensity = directionalLight.intensity === 0 ? 0.8 : 0;
+        directionalLight.visible = !directionalLight.visible;
         keys['d'] = false;
     }
     if (keys['p']) {
         spotlights.forEach(spotlight => {
-            spotlight.intensity = 1;
+            spotlight.visible = true;
         });
         pointlights.forEach(pointlight => {
-            pointlight.intensity = 1;
+            pointlight.visible = true;
         });
         keys['p'] = false;
     }
     if (keys['s']) {
         spotlights.forEach(spotlight => {
-            spotlight.intensity = 0;
+            spotlight.visible = false;
         });
         pointlights.forEach(pointlight => {
-            pointlight.intensity = 0;
+            pointlight.visible = false;
         });
         keys['s'] = false;
     }
