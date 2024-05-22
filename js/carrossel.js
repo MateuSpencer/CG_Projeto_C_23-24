@@ -14,6 +14,7 @@ let speed = 0.05;
 
 const cameras = [];
 let activeCamera, controls;
+let stereoCamera;
 let directionalLight;
 
 let keys = {};
@@ -314,6 +315,10 @@ function setupCameras() {
 
     activeCamera = cameraPerspective;
     controls = new OrbitControls(activeCamera, renderer.domElement);
+
+    stereoCamera = new THREE.StereoCamera();
+    stereoCamera.aspect = 0.5;
+    stereoCamera.update(cameraPerspective);
 }
 
 function onResize() {
@@ -339,7 +344,17 @@ function setupXR() {
 
 function render() {
     'use strict';
-    renderer.render(scene, activeCamera);
+    if (renderer.xr.isPresenting) {
+        renderer.clear();
+
+        renderer.setViewport(0, 0, window.innerWidth / 2, window.innerHeight);
+        renderer.render(scene, stereoCamera.cameraL);
+
+        renderer.setViewport(window.innerWidth / 2, 0, window.innerWidth / 2, window.innerHeight);
+        renderer.render(scene, stereoCamera.cameraR);
+    } else {
+        renderer.render(scene, activeCamera);
+    }
 }
 
 function init() {
@@ -513,12 +528,12 @@ function toggleLightCalculation() {
             object.material = new THREE.MeshBasicMaterial({ color: object.material.color });
         });
 
-        mobiusStrip.material = new THREE.MeshBasicMaterial({ color: mobiusStrip.material.color , side: THREE.DoubleSide});
+        mobiusStrip.material = new THREE.MeshBasicMaterial({ color: mobiusStrip.material.color, side: THREE.DoubleSide });
         cylinder.material = new THREE.MeshBasicMaterial({ color: cylinder.material.color });
         ring1.material = new THREE.MeshBasicMaterial({ color: ring1.material.color });
         ring2.material = new THREE.MeshBasicMaterial({ color: ring2.material.color });
         ring3.material = new THREE.MeshBasicMaterial({ color: ring3.material.color });
-        skydome.material = new THREE.MeshBasicMaterial({ map: skydome.material.map , side: THREE.DoubleSide });
+        skydome.material = new THREE.MeshBasicMaterial({ map: skydome.material.map, side: THREE.DoubleSide });
     }
 }
 
