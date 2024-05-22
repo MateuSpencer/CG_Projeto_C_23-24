@@ -18,6 +18,7 @@ let directionalLight;
 let keys = {};
 let objects = [];
 let spotlights = [];
+const lightPositions = [];
 const pointlights = [];
 
 function createSkydome(radius, widthSegments, heightSegments, texture) {
@@ -46,10 +47,11 @@ function addSkydome() {
     });
 }
 
-function createMobiusStrip(uSegments, vSegments, radius) {
+function createMobiusStrip(uSegments, vSegments, radius, numberOfLights = 8) {
     const geometry = new THREE.BufferGeometry();
     const vertices = [];
     const indices = [];
+    let lightCount = 0;
 
     for (let i = 0; i <= uSegments; i++) {
         const u = i / uSegments * Math.PI * 2;
@@ -70,6 +72,11 @@ function createMobiusStrip(uSegments, vSegments, radius) {
 
                 indices.push(a, b, d);
                 indices.push(a, d, c);
+            }
+
+            if ( lightCount < numberOfLights && v == 0 && i == Math.floor((uSegments/numberOfLights) * lightCount)) {
+                lightPositions.push([x, y, z]);
+                lightCount++;
             }
         }
     }
@@ -98,17 +105,13 @@ function addMobiusStrip(cylinder, cylinderReferencial) {
     mobiusStrip = createObject(cylinderReferencial, mobiusGeometry, materials, [0, cylinder.geometry.parameters.height - 1, 0], identityVector, [Math.PI / 2, 0, 0]);
     mobiusStrip.materials = materials; // Store materials for later use
 
-    // point lights
-    for (let i = 0; i < 8; i++) {
-        const angle = 2 * Math.PI / 8 * i; // Divide the circle into 8 parts
-        const x = radius * Math.cos(angle);
-        const z = radius * Math.sin(angle);
-
+    lightPositions.forEach(position => {
+        const [x, y, z] = position;
         const pointlight = new THREE.PointLight(0xffffff, 1);
-        pointlight.position.set(x, 0, z);
+        pointlight.position.set(x, y, z);
         mobiusStrip.add(pointlight);
         pointlights.push(pointlight);
-    }
+    });
 }
 
 function createObject(parent, geometry, materials, position, scale, rotation) {
