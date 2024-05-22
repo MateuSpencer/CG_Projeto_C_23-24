@@ -10,17 +10,19 @@ const identityVector = [1, 1, 1], zeroVector = [0, 0, 0];
 let cylinder, ring1, ring2, ring3, mobiusStrip, skydome;
 let cylinderReferencial, ring1Referencial, ring2Referencial, ring3Referencial;
 let ringThickness = 2;
-let speed = 0.05; 
+let speed = 0.05;
 
 const cameras = [];
 let activeCamera, controls;
-let directionalLight; 
+let directionalLight;
 
 let keys = {};
 let objects = [];
 let spotlights = [];
 const lightPositions = [];
 const pointlights = [];
+let previousMaterial = 'MeshLambertMaterial';
+let lightCalculation = true;
 
 function createSkydome(radius, widthSegments, heightSegments, texture) {
     const geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments, 0, Math.PI * 2, 0, Math.PI / 2);
@@ -41,7 +43,7 @@ function addSkydome() {
     const heightSegments = 16;
 
     const loader = new THREE.TextureLoader();
-    loader.load('../img/frame.png', function (texture) {
+    loader.load('../img/frame.png', function(texture) {
         const skydome = createSkydome(radius, widthSegments, heightSegments, texture);
         skydome.position.set(0, 0, 0);
         scene.add(skydome);
@@ -75,7 +77,7 @@ function createMobiusStrip(uSegments, vSegments, radius, numberOfLights = 8) {
                 indices.push(a, d, c);
             }
 
-            if ( lightCount < numberOfLights && v == 0 && i == Math.floor((uSegments/numberOfLights) * lightCount)) {
+            if (lightCount < numberOfLights && v == 0 && i == Math.floor((uSegments / numberOfLights) * lightCount)) {
                 lightPositions.push([x, y, z]);
                 lightCount++;
             }
@@ -95,7 +97,7 @@ function addMobiusStrip(cylinder, cylinderReferencial) {
     const vSegments = 10; // Number of segments along the v direction
 
     const mobiusGeometry = createMobiusStrip(uSegments, vSegments, radius);
-    
+
     const materials = [
         new THREE.MeshLambertMaterial({ color: 0x00ff00, side: THREE.DoubleSide }),
         new THREE.MeshPhongMaterial({ color: 0x00ff00, side: THREE.DoubleSide }),
@@ -171,7 +173,7 @@ function createHyperboloid(radius, height, radialSegments, heightSegments) {
     for (let i = 0; i <= heightSegments; i++) {
         const v = (i / heightSegments - 0.5) * height;
         const currentRadius = radius * Math.sqrt(1 + (v / height) * (v / height));
-        
+
         for (let j = 0; j <= radialSegments; j++) {
             const u = j / radialSegments * Math.PI * 2;
 
@@ -226,7 +228,7 @@ function addObjectsToRing(ringReferencial, ring) {
             new THREE.MeshToonMaterial({ color: color, side: THREE.DoubleSide }),
             new THREE.MeshNormalMaterial()
         ];
-        
+
         const rotation = [Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI];
         const scale = [Math.random() * 2, Math.random() * 2, Math.random() * 2];
 
@@ -331,7 +333,7 @@ function onResize() {
 }
 
 function setupXR() {
-    document.body.appendChild( VRButton.createButton( renderer) );
+    document.body.appendChild(VRButton.createButton(renderer));
     renderer.xr.enabled = true;
 }
 
@@ -434,15 +436,20 @@ function update() {
     if (keys['r']) {
         switchMaterial('MeshNormalMaterial');
     }
+    if (keys['t']) {
+        toggleLightCalculation();
+        keys['t'] = false;
+    }
 
     objects.forEach(object => {
         object.rotation.x += speed;
     });
 
-    cylinderReferencial.rotation.y += speed*0.5;
+    cylinderReferencial.rotation.y += speed * 0.5;
 }
 
 function switchMaterial(materialType) {
+    previousMaterial = materialType;
     objects.forEach(object => {
         switch (materialType) {
             case 'MeshLambertMaterial':
@@ -493,6 +500,25 @@ function switchMaterial(materialType) {
             ring3.material = ring3.materials[3];
             skydome.material = skydome.materials[3];
             break;
+    }
+}
+
+function toggleLightCalculation() {
+    'use strict'
+    lightCalculation = !lightCalculation;
+    if (lightCalculation) {
+        switchMaterial(previousMaterial);
+    } else {
+        objects.forEach(object => {
+            object.material = new THREE.MeshBasicMaterial({ color: object.material.color });
+        });
+
+        mobiusStrip.material = new THREE.MeshBasicMaterial({ color: mobiusStrip.material.color });
+        cylinder.material = new THREE.MeshBasicMaterial({ color: cylinder.material.color });
+        ring1.material = new THREE.MeshBasicMaterial({ color: ring1.material.color });
+        ring2.material = new THREE.MeshBasicMaterial({ color: ring2.material.color });
+        ring3.material = new THREE.MeshBasicMaterial({ color: ring3.material.color });
+        skydome.material = new THREE.MeshBasicMaterial({ color: skydome.material.color });
     }
 }
 
