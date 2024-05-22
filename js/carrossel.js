@@ -43,7 +43,7 @@ function addSkydome() {
     const heightSegments = 16;
 
     const loader = new THREE.TextureLoader();
-    loader.load('../img/frame.png', function(texture) {
+    loader.load('img/frame.png', function(texture) {
         const skydome = createSkydome(radius, widthSegments, heightSegments, texture);
         skydome.position.set(0, 0, 0);
         scene.add(skydome);
