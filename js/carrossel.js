@@ -513,12 +513,12 @@ function toggleLightCalculation() {
             object.material = new THREE.MeshBasicMaterial({ color: object.material.color });
         });
 
-        mobiusStrip.material = new THREE.MeshBasicMaterial({ color: mobiusStrip.material.color });
+        mobiusStrip.material = new THREE.MeshBasicMaterial({ color: mobiusStrip.material.color , side: THREE.DoubleSide});
         cylinder.material = new THREE.MeshBasicMaterial({ color: cylinder.material.color });
         ring1.material = new THREE.MeshBasicMaterial({ color: ring1.material.color });
         ring2.material = new THREE.MeshBasicMaterial({ color: ring2.material.color });
         ring3.material = new THREE.MeshBasicMaterial({ color: ring3.material.color });
-        skydome.material = new THREE.MeshBasicMaterial({ color: skydome.material.color });
+        skydome.material = new THREE.MeshBasicMaterial({ map: skydome.material.map , side: THREE.DoubleSide });
     }
 }
 
