@@ -1,3 +1,11 @@
+/*
+Mateus Spencer 100032
+Ricardo Espadinha 100070
+Sebastiõ Sousa 90634
+Total de Horas de Trabalho: 35 horas
+Site: https://web.tecnico.ulisboa.pt/ist190634/
+*/
+
 import * as THREE from 'three';
 import { OrbitControls } from 'https://threejs.org/examples/jsm/controls/OrbitControls.js';
 import { VRButton } from 'three/addons/webxr/VRButton.js'
